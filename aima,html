@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>For Aimaaaaaaa ✨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Sacramento&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #ff2a6d;
+      --secondary: #05d9e8;
+      --bg-dark: #08090d;
+      --card-bg: rgba(18, 22, 32, 0.85);
+      --text: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      overflow-x: hidden;
+    }
+
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 550px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 42, 109, 0.3);
+      border-radius: 28px;
+      padding: 30px 25px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 15px rgba(255, 42, 109, 0.15);
+    }
+
+    .title-sub {
+      font-family: 'Sacramento', cursive;
+      font-size: 3rem;
+      color: var(--secondary);
+      text-shadow: 0 0 12px rgba(5, 217, 232, 0.6);
+      margin-bottom: -10px;
+    }
+
+    h1.name-title {
+      font-size: 2.7rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      background: linear-gradient(45deg, #ff2a6d, #ff758c, #05d9e8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 20px;
+      animation: pulseGlow 3s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { filter: drop-shadow(0 0 8px rgba(255, 42, 109, 0.4)); }
+      100% { filter: drop-shadow(0 0 20px rgba(255, 42, 109, 0.9)); }
+    }
+
+    .btn-glow {
+      background: linear-gradient(135deg, var(--primary) 0%, #ff758c 100%);
+      color: white;
+      border: none;
+      padding: 16px 36px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(255, 42, 109, 0.5);
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .btn-glow:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px rgba(255, 42, 109, 0.8);
+    }
+
+    /* Love Battery Meter */
+    .meter-container {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      height: 28px;
+      overflow: hidden;
+      margin: 15px 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 25%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 20px;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 15px var(--primary);
+    }
+
+    .meter-text {
+      position: absolute;
+      width: 100%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    /* Flip Cards Grid */
+    .grid-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .flip-card {
+      background-color: transparent;
+      height: 125px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-front, .flip-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .flip-front {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--secondary);
+      font-weight: 600;
+    }
+
+    .flip-back {
+      background: linear-gradient(135deg, rgba(255, 42, 109, 0.3), rgba(5, 217, 232, 0.3));
+      color: white;
+      transform: rotateY(180deg);
+      font-size: 0.9rem;
+      line-height: 1.3;
+    }
+
+    /* Secret Coupon */
+    .coupon-box {
+      border: 2px dashed var(--secondary);
+      border-radius: 16px;
+      padding: 20px;
+      background: rgba(5, 217, 232, 0.05);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .coupon-box:hover {
+      background: rgba(5, 217, 232, 0.15);
+    }
+
+    .section-head {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--secondary);
+      margin-bottom: 15px;
+    }
+
+    .choice-container {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .choice-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .choice-btn:hover {
+      background: rgba(255, 42, 109, 0.2);
+      border-color: var(--primary);
+    }
+
+    /* Final Cool Text Banner */
+    .signature-card {
+      background: linear-gradient(135deg, rgba(255, 42, 109, 0.2), rgba(5, 217, 232, 0.2));
+      border: 1px solid rgba(5, 217, 232, 0.4);
+    }
+
+    .signature-text {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.6;
+    }
+
+    .signature-highlight {
+      color: var(--secondary);
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .author-signature {
+      margin-top: 15px;
+      font-size: 0.95rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--primary);
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="bg-canvas"></canvas>
+
+  <div class="container">
+
+    <!-- Header Card -->
+    <div class="card">
+      <div class="title-sub">Hey Beautiful</div>
+      <h1 class="name-title">AIMAAAAAAA</h1>
+      
+      <p style="color: #ccc; margin-bottom: 15px;">Tap below to charge up my affection meter for you:</p>
+      
+      <div class="meter-container" onclick="chargeBattery()">
+        <div class="meter-fill" id="meterFill"></div>
+        <div class="meter-text" id="meterText">LOVE METER: 25%</div>
+      </div>
+      
+      <button class="btn-glow" style="margin-top: 10px;" onclick="chargeBattery()">Boost Power ⚡</button>
+    </div>
+
+    <!-- Flip Cards Grid -->
+    <div class="card">
+      <div class="section-head">Tap Cards to Reveal 🎁</div>
+      <div class="grid-cards">
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-card-inner">
+            <div class="flip-front">Reason #1 ✨</div>
+            <div class="flip-back">Your laugh instantly makes my day 100x better.</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-card-inner">
+            <div class="flip-front">Reason #2 🌸</div>
+            <div class="flip-back">You are uniquely yourself, and I love every bit of it.</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-card-inner">
+            <div class="flip-front">Reason #3 🌌</div>
+            <div class="flip-back">You bring energy and color into my world.</div>
+          </div>
+        </div>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-card-inner">
+            <div class="flip-front">Reason #4 💖</div>
+            <div class="flip-back">Out of 8 billion people, you are my absolute favorite.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secret Coupon Card -->
+    <div class="card">
+      <div class="section-head">Special Gift Voucher 🎟️</div>
+      <div class="coupon-box" id="coupon" onclick="revealCoupon()">
+        <div id="couponContent" style="font-size: 1.05rem; font-weight: 600;">Tap to unlock your mystery coupon 🔒</div>
+      </div>
+    </div>
+
+    <!-- Mini Game Section -->
+    <div class="card">
+      <div class="section-head">Quick Question 💖</div>
+      <p id="questionText" style="margin-bottom: 15px; color: #ccc;">Who gets 100% of my love and attention?</p>
+      <div class="choice-container" id="choiceContainer">
+        <button class="choice-btn" onclick="answerQuestion(true)">Aimaaaaaaa! 🙋‍♀️</button>
+        <button class="choice-btn" id="noBtn" onmouseover="dodgeNo()" onclick="dodgeNo()">Someone else 😜</button>
+      </div>
+    </div>
+
+    <!-- Cool Final Signature Card -->
+    <div class="card signature-card">
+      <div class="signature-text">
+        "In a world full of noise, you're my favorite <span class="signature-highlight">frequency</span>. Always keeping it real with you."
+      </div>
+      <div class="author-signature">— MADE WITH LOVE BY SHAMIL ⚡</div>
+    </div>
+
+  </div>
+
+  <script>
+    /* Background Canvas Particles */
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + 20;
+        this.size = Math.random() * 14 + 8;
+        this.speedY = Math.random() * 1.5 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.opacity = Math.random() * 0.5 + 0.3;
+        this.type = ['❤️', '✨', '🌸', '💫'][Math.floor(Math.random() * 4)];
+      }
+      update() {
+        this.y -= this.speedY;
+        this.x += this.speedX;
+        if (this.y < -20) this.reset();
+      }
+      draw() {
+        ctx.globalAlpha = this.opacity;
+        ctx.font = `${this.size}px serif`;
+        ctx.fillText(this.type, this.x, this.y);
+      }
+    }
+
+    for (let i = 0; i < 40; i++) {
+      particles.push(new Particle());
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* Battery Meter Logic */
+    let charge = 25;
+    function chargeBattery() {
+      if (charge < 1000) {
+        charge += 45;
+      }
+      const fill = document.getElementById('meterFill');
+      const text = document.getElementById('meterText');
+      
+      const fillWidth = Math.min(charge, 100);
+      fill.style.width = fillWidth + '%';
+      text.innerText = `LOVE METER: ${charge}%`;
+
+      confetti({
+        particleCount: 30,
+        spread: 50,
+        origin: { y: 0.4 },
+        colors: ['#ff2a6d', '#05d9e8']
+      });
+    }
+
+    /* Secret Coupon Reveal Logic */
+    let revealed = false;
+    function revealCoupon() {
+      if (!revealed) {
+        revealed = true;
+        confetti({
+          particleCount: 140,
+          spread: 80,
+          origin: { y: 0.7 }
+        });
+        document.getElementById('couponContent').innerHTML = "✨ <b>COUPON UNLOCKED:</b><br><span style='color: var(--secondary); font-size: 1.1rem;'>Redeemable for 1x Unlimited Late-Night Hangout + Favorite Treats 🍕🍦</span>";
+      }
+    }
+
+    /* Dodge Game Logic */
+    function dodgeNo() {
+      const btn = document.getElementById('noBtn');
+      const randomX = (Math.random() - 0.5) * 220;
+      const randomY = (Math.random() - 0.5) * 120;
+      btn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+    }
+
+    function answerQuestion(isCorrect) {
+      if (isCorrect) {
+        confetti({
+          particleCount: 200,
+          spread: 100,
+          origin: { y: 0.8 }
+        });
+        document.getElementById('questionText').innerHTML = "<span style='color: var(--secondary); font-weight: bold;'>100% Correct! You hold all the key rights forever! 💖</span>";
+        document.getElementById('choiceContainer').style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
